@@ -39,3 +39,8 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results.sarif
+
+      - name: 🚀 Push Docker Image
+        run: |
+          docker tag apitest01:latest sooyaa02/apitest01:latest
+          docker push sooyaa02/apitest01:latest
