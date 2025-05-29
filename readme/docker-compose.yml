@@ -1,0 +1,33 @@
+version: '3.8'
+
+networks:
+  mynetwork: 
+    driver: bridge
+
+services:
+  webapi:
+    build:
+      context: .  # ใช้ Dockerfile จากโฟลเดอร์ปัจจุบัน
+      dockerfile: Dockerfile  # ระบุ Dockerfile ที่ต้องการใช้
+    container_name: webapi_container
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy  # ✅ ให้ Web API รอจน PostgreSQL พร้อม
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=mydb;Username=myuser;Password=mypassword"
+      ASPNETCORE_URLS: "http://+:80" 
+    ports:
+      - "5239:80"
+    networks:
+      - mynetwork
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    networks:
+      - mynetwork
